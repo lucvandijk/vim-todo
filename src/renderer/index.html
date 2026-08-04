@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+  <title>Vim Todo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="titlebar">
+      <div class="title">
+        <span class="dot"></span>
+        vim-todo
+      </div>
+      <div class="mode-badge" id="modeBadge">NORMAL</div>
+      <button class="icon-btn" id="settingsBtn" title="Change global shortcut">⚙</button>
+    </header>
+
+    <main class="list-wrap">
+      <ul id="list" class="list"></ul>
+      <p class="empty-state" id="emptyState">Nothing here yet. Press <kbd>i</kbd> to add a task.</p>
+    </main>
+
+    <div class="insert-bar" id="insertBar">
+      <span class="insert-caret" id="insertCaret">＋</span>
+      <input id="insertInput" type="text" placeholder="Type a task and press Enter…" autocomplete="off" spellcheck="false" />
+    </div>
+
+    <footer class="hints">
+      <span><kbd>j</kbd><kbd>k</kbd> move</span>
+      <span><kbd>space</kbd> toggle</span>
+      <span><kbd>i</kbd> insert</span>
+      <span><kbd>e</kbd> edit</span>
+      <span><kbd>d</kbd> delete</span>
+      <span><kbd>s</kbd> resort</span>
+      <span><kbd>q</kbd> quit</span>
+      <span><kbd>esc</kbd> hide</span>
+    </footer>
+
+    <div class="quit-overlay" id="quitOverlay">
+      <div class="quit-panel">
+        <div class="quit-icon">⏻</div>
+        <div class="quit-title">Press <kbd>q</kbd> again to quit</div>
+        <div class="quit-subtitle">This will fully close Vim Todo</div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="settingsOverlay">
+      <div class="settings-panel">
+        <h2>Global Shortcut</h2>
+        <p class="settings-hint">Press a key combination to set a new shortcut for opening Vim Todo.</p>
+        <div class="shortcut-capture" id="shortcutCapture">Press keys…</div>
+        <div class="settings-actions">
+          <button class="btn" id="cancelShortcutBtn">Cancel</button>
+          <button class="btn primary" id="saveShortcutBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

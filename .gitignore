@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Electron-builder output
+release/
+dist/
+out/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Electron packager cache
+.cache/
+
+# npm/yarn diagnostics
+.npm/
+.yarn/

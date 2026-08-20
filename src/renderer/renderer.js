@@ -18,6 +18,8 @@ let editingIndex = -1;
 let pendingAccelerator = null;
 let pendingDeleteId = null;
 let pendingDeleteTimer = null;
+let pendingCopyId = null;
+let pendingCopyTimer = null;
 let pendingQuit = false;
 let pendingQuitTimer = null;
 
@@ -46,11 +48,13 @@ function render() {
 
   todos.forEach((todo, index) => {
     const isPendingDelete = todo.id === pendingDeleteId;
+    const isPendingCopy = todo.id === pendingCopyId;
     const li = document.createElement('li');
     li.className = 'item'
       + (todo.done ? ' done' : '')
       + (index === selectedIndex ? ' selected' : '')
-      + (isPendingDelete ? ' confirm-delete' : '');
+      + (isPendingDelete ? ' confirm-delete' : '')
+      + (isPendingCopy ? ' confirm-copy' : '');
 
     const check = document.createElement('span');
     check.className = 'check';
@@ -58,12 +62,17 @@ function render() {
 
     const text = document.createElement('span');
     text.className = 'text';
-    text.textContent = isPendingDelete ? 'Press d again to confirm delete' : todo.text;
+    text.textContent = isPendingDelete
+      ? 'Press d again to confirm delete'
+      : isPendingCopy
+        ? 'Press c again to copy'
+        : todo.text;
 
     li.appendChild(check);
     li.appendChild(text);
     li.addEventListener('click', () => {
       clearPendingDelete();
+      clearPendingCopy();
       selectedIndex = index;
       render();
     });
@@ -100,6 +109,23 @@ function armPendingDelete(id) {
   }, 2500);
 }
 
+function clearPendingCopy() {
+  pendingCopyId = null;
+  if (pendingCopyTimer) {
+    clearTimeout(pendingCopyTimer);
+    pendingCopyTimer = null;
+  }
+}
+
+function armPendingCopy(id) {
+  pendingCopyId = id;
+  if (pendingCopyTimer) clearTimeout(pendingCopyTimer);
+  pendingCopyTimer = setTimeout(() => {
+    clearPendingCopy();
+    render();
+  }, 2500);
+}
+
 function clearPendingQuit() {
   pendingQuit = false;
   if (pendingQuitTimer) {
@@ -125,6 +151,7 @@ function handleQuitKey() {
     return;
   }
   clearPendingDelete();
+  clearPendingCopy();
   render();
   armPendingQuit();
 }
@@ -132,6 +159,7 @@ function handleQuitKey() {
 function moveSelection(delta) {
   if (!todos.length) return;
   clearPendingDelete();
+  clearPendingCopy();
   clearPendingQuit();
   selectedIndex = Math.min(todos.length - 1, Math.max(0, selectedIndex + delta));
   render();
@@ -140,6 +168,7 @@ function moveSelection(delta) {
 function toggleSelected() {
   if (selectedIndex < 0 || !todos[selectedIndex]) return;
   clearPendingDelete();
+  clearPendingCopy();
   clearPendingQuit();
   todos[selectedIndex].done = !todos[selectedIndex].done;
   saveTodos();
@@ -151,6 +180,7 @@ function deleteSelected() {
   const todo = todos[selectedIndex];
 
   if (pendingDeleteId !== todo.id) {
+    clearPendingCopy();
     armPendingDelete(todo.id);
     render();
     return;
@@ -165,8 +195,25 @@ function deleteSelected() {
   render();
 }
 
+function copySelected() {
+  if (selectedIndex < 0 || !todos[selectedIndex]) return;
+  const todo = todos[selectedIndex];
+
+  if (pendingCopyId !== todo.id) {
+    clearPendingDelete();
+    armPendingCopy(todo.id);
+    render();
+    return;
+  }
+
+  clearPendingCopy();
+  window.vimTodo.copyToClipboard(todo.text);
+  render();
+}
+
 function resort() {
   clearPendingDelete();
+  clearPendingCopy();
   clearPendingQuit();
   const pending = todos.filter((t) => !t.done);
   const done = todos.filter((t) => t.done);
@@ -182,6 +229,7 @@ function resort() {
 
 function enterInsertMode() {
   clearPendingDelete();
+  clearPendingCopy();
   clearPendingQuit();
   editingIndex = -1;
   insertCaret.textContent = '＋';
@@ -195,6 +243,7 @@ function enterInsertMode() {
 function enterEditMode() {
   if (selectedIndex < 0 || !todos[selectedIndex]) return;
   clearPendingDelete();
+  clearPendingCopy();
   clearPendingQuit();
   editingIndex = selectedIndex;
   insertCaret.textContent = '✎';
@@ -244,6 +293,7 @@ function commitInsert() {
 
 function openSettings() {
   clearPendingDelete();
+  clearPendingCopy();
   clearPendingQuit();
   setMode('settings');
   pendingAccelerator = null;
@@ -329,6 +379,10 @@ document.addEventListener('keydown', (e) => {
     clearPendingDelete();
     render();
   }
+  if (e.key !== 'c' && pendingCopyId !== null) {
+    clearPendingCopy();
+    render();
+  }
   if (e.key !== 'q' && pendingQuit) {
     clearPendingQuit();
   }
@@ -360,6 +414,10 @@ document.addEventListener('keydown', (e) => {
       e.preventDefault();
       deleteSelected();
       break;
+    case 'c':
+      e.preventDefault();
+      copySelected();
+      break;
     case 's':
       e.preventDefault();
       resort();
@@ -371,6 +429,7 @@ document.addEventListener('keydown', (e) => {
     case 'Escape':
       e.preventDefault();
       clearPendingDelete();
+      clearPendingCopy();
       clearPendingQuit();
       window.vimTodo.hideWindow();
       break;
@@ -385,6 +444,7 @@ saveShortcutBtn.addEventListener('click', saveShortcut);
 
 window.vimTodo.onWindowShown(() => {
   clearPendingDelete();
+  clearPendingCopy();
   clearPendingQuit();
   if (mode === 'insert') {
     exitInsertMode();

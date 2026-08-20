@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, clipboard } = require('electron');
 
 contextBridge.exposeInMainWorld('vimTodo', {
   getTodos: () => ipcRenderer.invoke('todos:get'),
@@ -7,5 +7,6 @@ contextBridge.exposeInMainWorld('vimTodo', {
   setShortcut: (accelerator) => ipcRenderer.invoke('shortcut:set', accelerator),
   hideWindow: () => ipcRenderer.send('window:hide'),
   quitApp: () => ipcRenderer.send('app:quit'),
+  copyToClipboard: (text) => clipboard.writeText(text),
   onWindowShown: (callback) => ipcRenderer.on('window-shown', callback)
 });

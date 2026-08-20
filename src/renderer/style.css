@@ -237,6 +237,20 @@ html, body {
   border-color: var(--danger);
 }
 
+.item.confirm-copy {
+  background: var(--accent-blue-bg);
+}
+
+.item.confirm-copy .text {
+  color: var(--accent-blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.item.confirm-copy .check {
+  border-color: var(--accent-blue);
+}
+
 .empty-state {
   display: none;
   text-align: center;

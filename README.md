@@ -5,13 +5,13 @@ A tiny todo list that lives in your tray. Press a keyboard shortcut, it pops ope
 ## Requirements
 
 - Node.js 18 or newer
-- npm
+- pnpm
 
 ## Setup
 
 ```
-npm install
-npm start
+pnpm install
+pnpm start
 ```
 
 The app has no window frame, no dock icon, and no menu bar. It runs quietly in the background and opens on demand.
@@ -47,9 +47,9 @@ Tasks and your chosen shortcut are saved automatically to disk and persist betwe
 ## Building an installable app
 
 ```
-npm run dist:mac
-npm run dist:win
-npm run dist:linux
+pnpm run dist:mac
+pnpm run dist:win
+pnpm run dist:linux
 ```
 
 The packaged app is written to the `release/` folder.

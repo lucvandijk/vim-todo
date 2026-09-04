@@ -1,5 +1,9 @@
 # vim-todo
 
+<p align="center">
+  <img src="hello_world.png" alt="vim-todo screenshot" width="460">
+</p>
+
 A tiny todo list that lives in your tray. Press a keyboard shortcut, it pops open centered on your current screen, you manage tasks with vim-style keys, and it hides itself again. Nothing else.
 
 ## Requirements
